@@ -201,14 +201,21 @@ local function modifyMoveset()
     end
 
     if config.userOptions.readyStanceToSavageAxeCharge.status then
-        bhtToolkit:replaceTransition(726343640, 7490, 4301)
-        bhtToolkit:replaceTransition(3934364626, 7518, 4301)
+        -- local charginCondensedSpinningSlashTransitionID = 4155 -- Charging Chainsaw;Unused
+        local charginCondensedSpinningSlashTransitionID = 4301 -- Charging Chainsaw/Slash
+        bhtToolkit:replaceTransition(726343640, 7490, charginCondensedSpinningSlashTransitionID)
+        bhtToolkit:replaceTransition(3934364626, 7518, charginCondensedSpinningSlashTransitionID)
     end
 
-    local condensedSpinningSlashTransitionID = 4411
+    -- local condensedSpinningSlashTransitionID = 4411 -- Instant Chainsaw; Unused
+    local condensedSpinningSlashTransitionID = 4319 -- Instant Chainsaw/Slash
+    local condensedSpinningSlashEventID = 4315 -- Instant Chainsaw/Slash
     if config.userOptions.readyStanceGuardHitSmallToSavageAxe.status then
         bhtToolkit:replaceTransition(readyStanceGuardHitSmallIndex2, 7506, condensedSpinningSlashTransitionID)
+        bhtToolkit:addTransitionEvent(readyStanceGuardHitSmallIndex2, 7506, condensedSpinningSlashEventID)
+
         bhtToolkit:replaceTransition(readyStanceGuardHitSmallIndex1, 7499, condensedSpinningSlashTransitionID)
+        bhtToolkit:addTransitionEvent(readyStanceGuardHitSmallIndex1, 7499, condensedSpinningSlashEventID)
     end
 
     if config.userOptions.readyStanceGuardHitWireUp.status then
@@ -224,6 +231,7 @@ local function modifyMoveset()
     if config.userOptions.guardHitSmallToSavageAxe.status then
         local guardHitSmallIndex = 1412529222
         bhtToolkit:replaceTransition(guardHitSmallIndex, 495, condensedSpinningSlashTransitionID)
+        bhtToolkit:addTransitionEvent(guardHitSmallIndex, 495, condensedSpinningSlashEventID)
     end
 
     if config.userOptions.airDashToSAED.status then
