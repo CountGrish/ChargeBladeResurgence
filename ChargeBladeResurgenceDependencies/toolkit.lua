@@ -1,4 +1,4 @@
-local behaviorTreeToolKit = require("behaviorTreeToolKit/toolkits")
+local behaviorTreeToolKit = require("./ChargeBladeResurgenceDependencies/behaviorTreeToolKit/toolkits")
 
 ---@return table|nil
 ---@param statesIndex table
