@@ -61,7 +61,7 @@ local function loadConfig()
                 description = "Instant Savage axe on successful block",
             },
             airDashToSAED = {
-                status = false,
+                status = true,
                 description = "Air Dash into AED/UED",
             },
         },
@@ -265,23 +265,23 @@ local function createUI()
         local uo = config.userOptions
         isUpdated[1], config.localOptions.enabled = imgui.checkbox("Enabled", config.localOptions.enabled)
         imgui.text("---AED/UED---")
-        isUpdated[5], uo.saedUnlockAngle.status = createCheckbox(uo.saedUnlockAngle)
-        isUpdated[6], uo.saedFasterDodge.status = createCheckbox(uo.saedFasterDodge)
-        isUpdated[7], uo.saedFasterBlock.status = createCheckbox(uo.saedFasterBlock)
+        isUpdated[2], uo.saedUnlockAngle.status = createCheckbox(uo.saedUnlockAngle)
+        isUpdated[3], uo.saedFasterDodge.status = createCheckbox(uo.saedFasterDodge)
+        isUpdated[4], uo.saedFasterBlock.status = createCheckbox(uo.saedFasterBlock)
         imgui.text("---Air Dash---")
-        isUpdated[14], uo.airDashToSAED.status = createCheckbox(uo.airDashToSAED)
+        isUpdated[5], uo.airDashToSAED.status = createCheckbox(uo.airDashToSAED)
         imgui.text("---Counter Peak Block---")
-        isUpdated[2], uo.counterPeakBlockAfter.status = createCheckbox(uo.counterPeakBlockAfter)
-        isUpdated[3], uo.counterPeakDodgeAfter.status = createCheckbox(uo.counterPeakDodgeAfter)
-        isUpdated[4], uo.counterPeakWireUp.status = createCheckbox(uo.counterPeakWireUp)
+        isUpdated[6], uo.counterPeakBlockAfter.status = createCheckbox(uo.counterPeakBlockAfter)
+        isUpdated[7], uo.counterPeakDodgeAfter.status = createCheckbox(uo.counterPeakDodgeAfter)
+        isUpdated[8], uo.counterPeakWireUp.status = createCheckbox(uo.counterPeakWireUp)
         imgui.text("---Guard Hit---")
-        isUpdated[13], uo.guardHitSmallToSavageAxe.status = createCheckbox(uo.guardHitSmallToSavageAxe)
+        isUpdated[9], uo.guardHitSmallToSavageAxe.status = createCheckbox(uo.guardHitSmallToSavageAxe)
         imgui.text("---Ready Stance---")
-        isUpdated[8], uo.readyStanceToSAED.status = createCheckbox(uo.readyStanceToSAED)
-        isUpdated[9], uo.readyStanceToSavageAxeCharge.status = createCheckbox(uo.readyStanceToSavageAxeCharge)
-        isUpdated[10], uo.readyStanceGuardHitSmallToSavageAxe.status = createCheckbox(uo.readyStanceGuardHitSmallToSavageAxe)
-        isUpdated[11], uo.readyStanceAnimationCancels.status = createCheckbox(uo.readyStanceAnimationCancels)
-        isUpdated[12], uo.readyStanceGuardHitWireUp.status = createCheckbox(uo.readyStanceGuardHitWireUp)
+        isUpdated[10], uo.readyStanceToSAED.status = createCheckbox(uo.readyStanceToSAED)
+        isUpdated[11], uo.readyStanceToSavageAxeCharge.status = createCheckbox(uo.readyStanceToSavageAxeCharge)
+        isUpdated[12], uo.readyStanceGuardHitSmallToSavageAxe.status = createCheckbox(uo.readyStanceGuardHitSmallToSavageAxe)
+        isUpdated[13], uo.readyStanceAnimationCancels.status = createCheckbox(uo.readyStanceAnimationCancels)
+        isUpdated[14], uo.readyStanceGuardHitWireUp.status = createCheckbox(uo.readyStanceGuardHitWireUp)
         imgui.tree_pop()
     end
     for _, value in ipairs(isUpdated) do
