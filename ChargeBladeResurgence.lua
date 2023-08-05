@@ -40,17 +40,17 @@ local function loadConfig()
                 status = true,
                 description = "AED/UED on successful Ready Stance",
             },
-            readyStanceToSavageAxeCharge = {
+            readyStanceToCondensedSlashCharge = {
                 status = true,
-                description = "Charge Savage Axe after Ready Stance",
+                description = "Charge Condensed Element/Spinning Slash after Ready Stance",
             },
             readyStanceAnimationCancels = {
                 status = true,
                 description = "Cancel attacks with Ready Stance",
             },
-            readyStanceGuardHitSmallToSavageAxe = {
+            readyStanceGuardHitSmallToCondensedSlash = {
                 status = true,
-                description = "Instant Savage Axe on successful Ready Stance",
+                description = "Instant Condensed Element/Spinning Slash on successful Ready Stance",
             },
             readyStanceToDashSlam = {
                 status = true,
@@ -60,9 +60,9 @@ local function loadConfig()
                 status = true,
                 description = "Morphing Advance/Air Dash on successful Ready Stance",
             },
-            guardHitSmallToSavageAxe = {
+            guardHitSmallToCondensedSlash = {
                 status = true,
-                description = "Instant Savage axe on successful block",
+                description = "Instant Condensed Element/Spinning Slash on successful block",
             },
             airDashToSAED = {
                 status = true,
@@ -307,19 +307,19 @@ local function modifyMoveset()
 
     local readyStanceIndex1 = 726343640
     local readyStanceIndex2 = 3934364626
-    if config.userOptions.readyStanceToSavageAxeCharge.status then
-        if not ReadyStanceToSavageAxeCharge then
-            ReadyStanceToSavageAxeCharge = {}
+    if config.userOptions.readyStanceToCondensedSlashCharge.status then
+        if not ReadyStanceToCondensedSlashCharge then
+            ReadyStanceToCondensedSlashCharge = {}
         end
         -- local charginCondensedSpinningSlashTransitionID = 4301 -- Charging Chainsaw;Unused
         local charginCondensedSpinningSlashTransitionID = 4155 -- Charging Chainsaw/Slash
-        ReadyStanceToSavageAxeCharge[1] =
+        ReadyStanceToCondensedSlashCharge[1] =
             bhtToolkit:replaceTransition(726343640, 7490, charginCondensedSpinningSlashTransitionID)
-        ReadyStanceToSavageAxeCharge[2] =
+        ReadyStanceToCondensedSlashCharge[2] =
             bhtToolkit:replaceTransition(3934364626, 7518, charginCondensedSpinningSlashTransitionID)
     else
-        if ReadyStanceToSavageAxeCharge then
-            for _, change in ipairs(ReadyStanceToSavageAxeCharge) do
+        if ReadyStanceToCondensedSlashCharge then
+            for _, change in ipairs(ReadyStanceToCondensedSlashCharge) do
                 change.reset()
             end
         end
@@ -347,22 +347,22 @@ local function modifyMoveset()
     -- local condensedSpinningSlashTransitionID = 4411 -- Instant Chainsaw; Unused
     local condensedSpinningSlashTransitionID = 4319 -- Instant Chainsaw/Slash
     local condensedSpinningSlashEventID = 4315 -- Instant Chainsaw/Slash
-    if config.userOptions.readyStanceGuardHitSmallToSavageAxe.status then
-        if not ReadyStanceGuardHitSmallToSavageAxe then
-            ReadyStanceGuardHitSmallToSavageAxe = {}
+    if config.userOptions.readyStanceGuardHitSmallToCondensedSlash.status then
+        if not ReadyStanceGuardHitSmallToCondensedSlash then
+            ReadyStanceGuardHitSmallToCondensedSlash = {}
         end
-        ReadyStanceGuardHitSmallToSavageAxe[1] =
+        ReadyStanceGuardHitSmallToCondensedSlash[1] =
             bhtToolkit:addTransitionEvent(readyStanceGuardHitSmallIndex2, 7506, condensedSpinningSlashEventID)
-        ReadyStanceGuardHitSmallToSavageAxe[2] =
+        ReadyStanceGuardHitSmallToCondensedSlash[2] =
             bhtToolkit:replaceTransition(readyStanceGuardHitSmallIndex2, 7506, condensedSpinningSlashTransitionID)
 
-        ReadyStanceGuardHitSmallToSavageAxe[3] =
+        ReadyStanceGuardHitSmallToCondensedSlash[3] =
             bhtToolkit:addTransitionEvent(readyStanceGuardHitSmallIndex1, 7499, condensedSpinningSlashEventID)
-        ReadyStanceGuardHitSmallToSavageAxe[4] =
+        ReadyStanceGuardHitSmallToCondensedSlash[4] =
             bhtToolkit:replaceTransition(readyStanceGuardHitSmallIndex1, 7499, condensedSpinningSlashTransitionID)
     else
-        if ReadyStanceGuardHitSmallToSavageAxe then
-            for _, change in ipairs(ReadyStanceGuardHitSmallToSavageAxe) do
+        if ReadyStanceGuardHitSmallToCondensedSlash then
+            for _, change in ipairs(ReadyStanceGuardHitSmallToCondensedSlash) do
                 change.reset()
             end
         end
@@ -396,18 +396,18 @@ local function modifyMoveset()
         end
     end
 
-    if config.userOptions.guardHitSmallToSavageAxe.status then
-        if not GuardHitSmallToSavageAxe then
-            GuardHitSmallToSavageAxe = {}
+    if config.userOptions.guardHitSmallToCondensedSlash.status then
+        if not GuardHitSmallToCondensedSlash then
+            GuardHitSmallToCondensedSlash = {}
         end
         local guardHitSmallIndex = 1412529222
-        GuardHitSmallToSavageAxe[1] =
+        GuardHitSmallToCondensedSlash[1] =
             bhtToolkit:replaceTransition(guardHitSmallIndex, 495, condensedSpinningSlashTransitionID)
-        GuardHitSmallToSavageAxe[2] =
+        GuardHitSmallToCondensedSlash[2] =
             bhtToolkit:addTransitionEvent(guardHitSmallIndex, 495, condensedSpinningSlashEventID)
     else
-        if GuardHitSmallToSavageAxe then
-            for _, change in ipairs(GuardHitSmallToSavageAxe) do
+        if GuardHitSmallToCondensedSlash then
+            for _, change in ipairs(GuardHitSmallToCondensedSlash) do
                 change.reset()
             end
         end
@@ -476,12 +476,12 @@ local function createUI()
         isUpdated[7], uo.counterPeakDodgeAfter.status = createCheckbox(uo.counterPeakDodgeAfter)
         isUpdated[8], uo.counterPeakWireUp.status = createCheckbox(uo.counterPeakWireUp)
         imgui.text("---Guard Hit---")
-        isUpdated[9], uo.guardHitSmallToSavageAxe.status = createCheckbox(uo.guardHitSmallToSavageAxe)
+        isUpdated[9], uo.guardHitSmallToCondensedSlash.status = createCheckbox(uo.guardHitSmallToCondensedSlash)
         imgui.text("---Ready Stance---")
         isUpdated[10], uo.readyStanceToSAED.status = createCheckbox(uo.readyStanceToSAED)
-        isUpdated[11], uo.readyStanceToSavageAxeCharge.status = createCheckbox(uo.readyStanceToSavageAxeCharge)
-        isUpdated[12], uo.readyStanceGuardHitSmallToSavageAxe.status =
-            createCheckbox(uo.readyStanceGuardHitSmallToSavageAxe)
+        isUpdated[11], uo.readyStanceToCondensedSlashCharge.status = createCheckbox(uo.readyStanceToCondensedSlashCharge)
+        isUpdated[12], uo.readyStanceGuardHitSmallToCondensedSlash.status =
+            createCheckbox(uo.readyStanceGuardHitSmallToCondensedSlash)
         isUpdated[13], uo.readyStanceToDashSlam.status = createCheckbox(uo.readyStanceToDashSlam)
         isUpdated[14], uo.readyStanceAnimationCancels.status = createCheckbox(uo.readyStanceAnimationCancels)
         isUpdated[15], uo.readyStanceGuardHitWireUp.status = createCheckbox(uo.readyStanceGuardHitWireUp)
