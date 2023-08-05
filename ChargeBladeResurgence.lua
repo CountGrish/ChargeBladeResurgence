@@ -52,6 +52,10 @@ local function loadConfig()
                 status = true,
                 description = "Instant Savage Axe on successful Ready Stance",
             },
+            readyStanceToDashSlam = {
+                status = true,
+                description = "Dash Slam after Ready Stance",
+            },
             readyStanceGuardHitWireUp = {
                 status = true,
                 description = "Morphing Advance/Air Dash on successful Ready Stance",
@@ -100,14 +104,34 @@ local function modifyMoveset()
     local swordDodgeTransitionID = 246
     local counterPeakIndex = 2912959963
     if config.userOptions.counterPeakBlockAfter.status then
+        if not CounterPeakBlockAfter then
+            CounterPeakBlockAfter = {}
+        end
         local blockAfterParryCondition = bhtToolkit:getConditionObj(7346)
-        blockAfterParryCondition:set_field("StartFrame", 10)
+        CounterPeakBlockAfter[1] = bhtToolkit:setField(blockAfterParryCondition, "StartFrame", 10)
+    else
+        if CounterPeakBlockAfter then
+            for _, change in ipairs(CounterPeakBlockAfter) do
+                change.reset()
+            end
+        end
     end
 
     if config.userOptions.counterPeakDodgeAfter.status then
-        local dodgeCondition = 7494
-        bhtToolkit:getConditionObj(dodgeCondition):set_field("StartFrame", 10)
-        bhtToolkit:addConditionPairs(counterPeakIndex, dodgeCondition, swordDodgeTransitionID, true)
+        if not CounterPeakDodgeAfter then
+            CounterPeakDodgeAfter = {}
+        end
+        local dodgeConditionID = 7494
+        local dodgeCondition = bhtToolkit:getConditionObj(dodgeConditionID)
+        CounterPeakDodgeAfter[1] = bhtToolkit:setField(dodgeCondition, "StartFrame", 10)
+        CounterPeakDodgeAfter[2] =
+            bhtToolkit:addConditionPairs(counterPeakIndex, dodgeConditionID, swordDodgeTransitionID, true)
+    else
+        if CounterPeakDodgeAfter then
+            for _, change in ipairs(CounterPeakDodgeAfter) do
+                change.reset()
+            end
+        end
     end
 
     local morphAdvanceTransitionID = 4295
@@ -118,10 +142,22 @@ local function modifyMoveset()
     local airDashConditionID = 6972
     local airDashEventID = 4042
     if config.userOptions.counterPeakWireUp.status then
-        bhtToolkit:addConditionPairs(counterPeakIndex, morphAdvanceConditionID, morphAdvanceTransitionID, true)
-        bhtToolkit:addConditionPairs(counterPeakIndex, airDashConditionID, airDashTransitionID, true)
-        bhtToolkit:addTransitionEvent(counterPeakIndex, morphAdvanceConditionID, morphAdvanceEventID)
-        bhtToolkit:addTransitionEvent(counterPeakIndex, airDashConditionID, airDashEventID)
+        if not CounterPeakWireUp then
+            CounterPeakWireUp = {}
+        end
+        CounterPeakWireUp[1] =
+            bhtToolkit:addConditionPairs(counterPeakIndex, morphAdvanceConditionID, morphAdvanceTransitionID, true)
+        CounterPeakWireUp[2] =
+            bhtToolkit:addConditionPairs(counterPeakIndex, airDashConditionID, airDashTransitionID, true)
+        CounterPeakWireUp[3] =
+            bhtToolkit:addTransitionEvent(counterPeakIndex, morphAdvanceConditionID, morphAdvanceEventID)
+        CounterPeakWireUp[4] = bhtToolkit:addTransitionEvent(counterPeakIndex, airDashConditionID, airDashEventID)
+    else
+        if CounterPeakWireUp then
+            for _, change in ipairs(CounterPeakWireUp) do
+                change.reset()
+            end
+        end
     end
 
     local hopSaedIndex = 2766799031
@@ -129,54 +165,95 @@ local function modifyMoveset()
     local aedIndex = 562795953
     local haedIndex = 3652067243
     if config.userOptions.saedFasterDodge.status then
+        if not SaedFasterDodge then
+            SaedFasterDodge = {}
+        end
         local axeDodgeConditionID = 7401
         local axeDodgeTransitionID = 3993
         local swordDodgeConditionID = 7261
         -- saedSwordDodge
         local swordDodgeCondition = bhtToolkit:getConditionObj(swordDodgeConditionID)
-        swordDodgeCondition:set_field("StartFrame", 50)
+        SaedFasterDodge[1] = bhtToolkit:setField(swordDodgeCondition, "StartFrame", 50)
         -- saedAxeInstaDodge
         local axeDodgeCondition = bhtToolkit:getConditionObj(axeDodgeConditionID)
-        axeDodgeCondition:set_field("StartFrame", 0)
-        bhtToolkit:addConditionPairs(saedIndex, axeDodgeConditionID, axeDodgeTransitionID, true)
+        SaedFasterDodge[2] = bhtToolkit:setField(axeDodgeCondition, "StartFrame", 0)
+        SaedFasterDodge[3] = bhtToolkit:addConditionPairs(saedIndex, axeDodgeConditionID, axeDodgeTransitionID, true)
         -- hopSAED
-        bhtToolkit:replaceCondition(hopSaedIndex, axeDodgeConditionID, swordDodgeConditionID)
-        bhtToolkit:addConditionPairs(hopSaedIndex, axeDodgeConditionID, axeDodgeTransitionID, true)
+        SaedFasterDodge[5] = bhtToolkit:replaceCondition(hopSaedIndex, axeDodgeConditionID, swordDodgeConditionID)
+        --|Must be in reversed order
+        SaedFasterDodge[4] = bhtToolkit:addConditionPairs(hopSaedIndex, axeDodgeConditionID, axeDodgeTransitionID, true)
         -- AED
-        bhtToolkit:addConditionPairs(aedIndex, swordDodgeConditionID, swordDodgeTransitionID, true)
-        bhtToolkit:addConditionPairs(aedIndex, axeDodgeConditionID, axeDodgeTransitionID, true)
+        SaedFasterDodge[6] = bhtToolkit:addConditionPairs(aedIndex, swordDodgeConditionID, swordDodgeTransitionID, true)
+        SaedFasterDodge[7] = bhtToolkit:addConditionPairs(aedIndex, axeDodgeConditionID, axeDodgeTransitionID, true)
         -- hopAED
         local haedDodgeConditionID = 7387
-        bhtToolkit:replaceCondition(haedIndex, haedDodgeConditionID, swordDodgeConditionID)
-        bhtToolkit:addConditionPairs(haedIndex, axeDodgeConditionID, axeDodgeTransitionID, true)
+        SaedFasterDodge[9] = bhtToolkit:replaceCondition(haedIndex, haedDodgeConditionID, swordDodgeConditionID)
+        --Must be in reversed order
+        SaedFasterDodge[8] = bhtToolkit:addConditionPairs(haedIndex, axeDodgeConditionID, axeDodgeTransitionID, true)
+    else
+        if SaedFasterDodge then
+            for _, change in ipairs(SaedFasterDodge) do
+                change.reset()
+            end
+        end
     end
 
     if config.userOptions.saedFasterBlock.status then
+        if not SaedFasterBlock then
+            SaedFasterBlock = {}
+        end
         local morphConditionID = 6458
         local morphTransitionID = 4017
-        bhtToolkit:addConditionPairs(saedIndex, morphConditionID, morphTransitionID, true)
-        bhtToolkit:addConditionPairs(hopSaedIndex, morphConditionID, morphTransitionID, true)
-        bhtToolkit:addConditionPairs(aedIndex, morphConditionID, morphTransitionID, true)
-        bhtToolkit:addConditionPairs(haedIndex, morphConditionID, morphTransitionID, true)
+        SaedFasterBlock[1] = bhtToolkit:addConditionPairs(saedIndex, morphConditionID, morphTransitionID, true)
+        SaedFasterBlock[2] = bhtToolkit:addConditionPairs(hopSaedIndex, morphConditionID, morphTransitionID, true)
+        SaedFasterBlock[3] = bhtToolkit:addConditionPairs(aedIndex, morphConditionID, morphTransitionID, true)
+        SaedFasterBlock[4] = bhtToolkit:addConditionPairs(haedIndex, morphConditionID, morphTransitionID, true)
+    else
+        if SaedFasterBlock then
+            for _, change in ipairs(SaedFasterBlock) do
+                change.reset()
+            end
+        end
     end
 
     if config.userOptions.saedUnlockAngle.status then
+        if not SaedUnlockAngle then
+            SaedUnlockAngle = {}
+        end
         local saedStartEventID = 4376
         local saedStartEvent = bhtToolkit:getEventObject(saedStartEventID)
-        saedStartEvent:set_field("_LimitAngle", 0)
-        saedStartEvent:set_field("_AngleSetType", 1)
-        bhtToolkit:addTransitionEvent(4286945847, 7237, saedStartEventID) --4527
+        SaedUnlockAngle[1] = bhtToolkit:setField(saedStartEvent, "_LimitAngle", 0)
+        SaedUnlockAngle[2] = bhtToolkit:setField(saedStartEvent, "_AngleSetType", 1)
+        SaedUnlockAngle[3] = bhtToolkit:addTransitionEvent(4286945847, 7237, saedStartEventID) --4527
+    else
+        if SaedUnlockAngle then
+            for _, change in ipairs(SaedUnlockAngle) do
+                change.reset()
+            end
+        end
     end
 
-    if config.userOptions.readyStanceAnimationCancels then
+    if config.userOptions.readyStanceAnimationCancels.status then
+        if not ReadyStanceAnimationCancels then
+            ReadyStanceAnimationCancels = {}
+        end
+
         if readyStanceConditions == nil then
             readyStanceConditions = bhtToolkit:getAllConditions_SpecificState({ 4043, 4616 })
         end
         if readyStanceConditions ~= nil then
+            local index = 1
             for _, conditionsInStates in pairs(readyStanceConditions) do
                 for _, condition in pairs(conditionsInStates) do
-                    condition:set_field("StartFrame", 0)
+                    ReadyStanceAnimationCancels[index] = bhtToolkit:setField(condition, "StartFrame", 0, index)
+                    index = index + 1
                 end
+            end
+        end
+    else
+        if ReadyStanceAnimationCancels then
+            for _, change in ipairs(ReadyStanceAnimationCancels) do
+                change.reset()
             end
         end
     end
@@ -184,49 +261,162 @@ local function modifyMoveset()
     local readyStanceGuardHitSmallIndex1 = 4213486657
     local readyStanceGuardHitSmallIndex2 = 1277383964
     if config.userOptions.readyStanceToSAED.status then
-        local saedFromGuardHit = 4044 --//2522966112 | 4235
-        local saedFromGuardHitCondition = 504 --//2522966112 | 4235
-        local oFromGuardHitCondition = 7504 --// 4621
-        local tFromGuardHitCondition = 7506 --// 4621
-        local oFromGuardHitCondition2 = 7497 --// 4622
-        local tFromGuardHitCondition2 = 7499 --// 4622
-        bhtToolkit:getConditionObj(oFromGuardHitCondition):set_field("CmdType", bhtToolkit.CommandFsm.AtkAwithoutX)
-        bhtToolkit:getConditionObj(tFromGuardHitCondition):set_field("CmdType", bhtToolkit.CommandFsm.AtkXwithoutA)
-        bhtToolkit:getConditionObj(oFromGuardHitCondition2):set_field("CmdType", bhtToolkit.CommandFsm.AtkAwithoutX)
-        bhtToolkit:getConditionObj(tFromGuardHitCondition2):set_field("CmdType", bhtToolkit.CommandFsm.AtkXwithoutA)
-        bhtToolkit:getConditionObj(saedFromGuardHitCondition):set_field("StartFrame", 0)
+        if not ReadyStanceToSAED then
+            ReadyStanceToSAED = {}
+        end
+        local saedFromGuardHitTransitionID = 4044 --//2522966112 | 4235
+        local saedFromGuardHitConditionID = 504 --//2522966112 | 4235
+        local oFromGuardHitConditionID = 7504 --// 4621
+        local tFromGuardHitConditionID = 7506 --// 4621
+        local oFromGuardHitCondition2ID = 7497 --// 4622
+        local tFromGuardHitCondition2ID = 7499 --// 4622
+        local oFromGuardHitCondition = bhtToolkit:getConditionObj(oFromGuardHitConditionID)
+        local tFromGuardHitCondition = bhtToolkit:getConditionObj(tFromGuardHitConditionID)
+        local oFromGuardHitCondition2 = bhtToolkit:getConditionObj(oFromGuardHitCondition2ID)
+        local tFromGuardHitCondition2 = bhtToolkit:getConditionObj(tFromGuardHitCondition2ID)
+        local saedFromGuardHitCondition = bhtToolkit:getConditionObj(saedFromGuardHitConditionID)
+        ReadyStanceToSAED[1] =
+            bhtToolkit:setField(oFromGuardHitCondition, "CmdType", bhtToolkit.CommandFsm.AtkAwithoutX)
+        ReadyStanceToSAED[2] =
+            bhtToolkit:setField(tFromGuardHitCondition, "CmdType", bhtToolkit.CommandFsm.AtkXwithoutA)
+        ReadyStanceToSAED[3] =
+            bhtToolkit:setField(oFromGuardHitCondition2, "CmdType", bhtToolkit.CommandFsm.AtkAwithoutX)
+        ReadyStanceToSAED[4] =
+            bhtToolkit:setField(tFromGuardHitCondition2, "CmdType", bhtToolkit.CommandFsm.AtkXwithoutA)
+        ReadyStanceToSAED[5] = bhtToolkit:setField(saedFromGuardHitCondition, "StartFrame", 0)
 
-        bhtToolkit:addConditionPairs(readyStanceGuardHitSmallIndex1, saedFromGuardHitCondition, saedFromGuardHit, true)
-        bhtToolkit:addConditionPairs(readyStanceGuardHitSmallIndex2, saedFromGuardHitCondition, saedFromGuardHit, true)
+        ReadyStanceToSAED[6] = bhtToolkit:addConditionPairs(
+            readyStanceGuardHitSmallIndex1,
+            saedFromGuardHitConditionID,
+            saedFromGuardHitTransitionID,
+            true
+        )
+        ReadyStanceToSAED[7] = bhtToolkit:addConditionPairs(
+            readyStanceGuardHitSmallIndex2,
+            saedFromGuardHitConditionID,
+            saedFromGuardHitTransitionID,
+            true
+        )
+    else
+        if ReadyStanceToSAED then
+            for _, change in ipairs(ReadyStanceToSAED) do
+                change.reset()
+            end
+        end
     end
 
+    local readyStanceIndex1 = 726343640
+    local readyStanceIndex2 = 3934364626
     if config.userOptions.readyStanceToSavageAxeCharge.status then
-        bhtToolkit:replaceTransition(726343640, 7490, 4301)
-        bhtToolkit:replaceTransition(3934364626, 7518, 4301)
+        if not ReadyStanceToSavageAxeCharge then
+            ReadyStanceToSavageAxeCharge = {}
+        end
+        -- local charginCondensedSpinningSlashTransitionID = 4301 -- Charging Chainsaw;Unused
+        local charginCondensedSpinningSlashTransitionID = 4155 -- Charging Chainsaw/Slash
+        ReadyStanceToSavageAxeCharge[1] =
+            bhtToolkit:replaceTransition(726343640, 7490, charginCondensedSpinningSlashTransitionID)
+        ReadyStanceToSavageAxeCharge[2] =
+            bhtToolkit:replaceTransition(3934364626, 7518, charginCondensedSpinningSlashTransitionID)
+    else
+        if ReadyStanceToSavageAxeCharge then
+            for _, change in ipairs(ReadyStanceToSavageAxeCharge) do
+                change.reset()
+            end
+        end
     end
 
-    local condensedSpinningSlashTransitionID = 4411
+    if config.userOptions.readyStanceToDashSlam.status then
+        if not ReadyStanceToDashSlam then
+            ReadyStanceToDashSlam = {}
+        end
+        local dashSlamTransitionID = 4384
+        ReadyStanceToDashSlam[1] = bhtToolkit:replaceTransition(readyStanceIndex1, 7489, dashSlamTransitionID)
+        ReadyStanceToDashSlam[2] = bhtToolkit:replaceTransition(readyStanceIndex2, 7517, dashSlamTransitionID)
+        ReadyStanceToDashSlam[3] =
+            bhtToolkit:replaceTransition(readyStanceGuardHitSmallIndex1, 7498, dashSlamTransitionID)
+        ReadyStanceToDashSlam[4] =
+            bhtToolkit:replaceTransition(readyStanceGuardHitSmallIndex2, 7505, dashSlamTransitionID)
+    else
+        if ReadyStanceToDashSlam then
+            for _, change in ipairs(ReadyStanceToDashSlam) do
+                change.reset()
+            end
+        end
+    end
+
+    -- local condensedSpinningSlashTransitionID = 4411 -- Instant Chainsaw; Unused
+    local condensedSpinningSlashTransitionID = 4319 -- Instant Chainsaw/Slash
+    local condensedSpinningSlashEventID = 4315 -- Instant Chainsaw/Slash
     if config.userOptions.readyStanceGuardHitSmallToSavageAxe.status then
-        bhtToolkit:replaceTransition(readyStanceGuardHitSmallIndex2, 7506, condensedSpinningSlashTransitionID)
-        bhtToolkit:replaceTransition(readyStanceGuardHitSmallIndex1, 7499, condensedSpinningSlashTransitionID)
+        if not ReadyStanceGuardHitSmallToSavageAxe then
+            ReadyStanceGuardHitSmallToSavageAxe = {}
+        end
+        ReadyStanceGuardHitSmallToSavageAxe[1] =
+            bhtToolkit:addTransitionEvent(readyStanceGuardHitSmallIndex2, 7506, condensedSpinningSlashEventID)
+        ReadyStanceGuardHitSmallToSavageAxe[2] =
+            bhtToolkit:replaceTransition(readyStanceGuardHitSmallIndex2, 7506, condensedSpinningSlashTransitionID)
+
+        ReadyStanceGuardHitSmallToSavageAxe[3] =
+            bhtToolkit:addTransitionEvent(readyStanceGuardHitSmallIndex1, 7499, condensedSpinningSlashEventID)
+        ReadyStanceGuardHitSmallToSavageAxe[4] =
+            bhtToolkit:replaceTransition(readyStanceGuardHitSmallIndex1, 7499, condensedSpinningSlashTransitionID)
+    else
+        if ReadyStanceGuardHitSmallToSavageAxe then
+            for _, change in ipairs(ReadyStanceGuardHitSmallToSavageAxe) do
+                change.reset()
+            end
+        end
     end
 
     if config.userOptions.readyStanceGuardHitWireUp.status then
-        for _, readyStanceIndex in pairs({ readyStanceGuardHitSmallIndex1, readyStanceGuardHitSmallIndex2 }) do
-            bhtToolkit:addConditionPairs(readyStanceIndex, morphAdvanceConditionID, morphAdvanceTransitionID, true)
-            bhtToolkit:addConditionPairs(readyStanceIndex, airDashConditionID, airDashTransitionID, true)
-
-            bhtToolkit:addTransitionEvent(readyStanceIndex, morphAdvanceConditionID, morphAdvanceEventID)
-            bhtToolkit:addTransitionEvent(readyStanceIndex, airDashConditionID, airDashEventID)
+        if not ReadyStanceGuardHitWireUp then
+            ReadyStanceGuardHitWireUp = {}
+        end
+        local index = 0
+        for _, readyStanceSmallHitIndex in pairs({ readyStanceGuardHitSmallIndex1, readyStanceGuardHitSmallIndex2 }) do
+            ReadyStanceGuardHitWireUp[1 + index] = bhtToolkit:addConditionPairs(
+                readyStanceSmallHitIndex,
+                morphAdvanceConditionID,
+                morphAdvanceTransitionID,
+                true
+            )
+            ReadyStanceGuardHitWireUp[2 + index] =
+                bhtToolkit:addConditionPairs(readyStanceSmallHitIndex, airDashConditionID, airDashTransitionID, true)
+            ReadyStanceGuardHitWireUp[3 + index] =
+                bhtToolkit:addTransitionEvent(readyStanceSmallHitIndex, morphAdvanceConditionID, morphAdvanceEventID)
+            ReadyStanceGuardHitWireUp[4 + index] =
+                bhtToolkit:addTransitionEvent(readyStanceSmallHitIndex, airDashConditionID, airDashEventID)
+            index = 4
+        end
+    else
+        if ReadyStanceGuardHitWireUp then
+            for _, change in ipairs(ReadyStanceGuardHitWireUp) do
+                change.reset()
+            end
         end
     end
 
     if config.userOptions.guardHitSmallToSavageAxe.status then
+        if not GuardHitSmallToSavageAxe then
+            GuardHitSmallToSavageAxe = {}
+        end
         local guardHitSmallIndex = 1412529222
-        bhtToolkit:replaceTransition(guardHitSmallIndex, 495, condensedSpinningSlashTransitionID)
+        GuardHitSmallToSavageAxe[1] =
+            bhtToolkit:replaceTransition(guardHitSmallIndex, 495, condensedSpinningSlashTransitionID)
+        GuardHitSmallToSavageAxe[2] =
+            bhtToolkit:addTransitionEvent(guardHitSmallIndex, 495, condensedSpinningSlashEventID)
+    else
+        if GuardHitSmallToSavageAxe then
+            for _, change in ipairs(GuardHitSmallToSavageAxe) do
+                change.reset()
+            end
+        end
     end
 
     if config.userOptions.airDashToSAED.status then
+        if not AirDashToSAED then
+            AirDashToSAED = {}
+        end
         local airDashIndex = 1120569797
         local airDashEarlyIndex = 612282475
 
@@ -237,19 +427,30 @@ local function modifyMoveset()
         local airAedID = 4018
         local airAedConditionID = 7351
         local airAedEventID = 4324
+        local index = 0
         for _, adIndex in pairs({ airDashIndex, airDashEarlyIndex }) do
-            bhtToolkit:addConditionPairs(adIndex, airSaedConditionID, airSaedID, true)
-            bhtToolkit:addConditionPairs(adIndex, airAedConditionID, airAedID, true)
-            bhtToolkit:addTransitionEvent(adIndex, airSaedConditionID, airSaedEventID)
-            bhtToolkit:addTransitionEvent(adIndex, airAedConditionID, airAedEventID)
+            AirDashToSAED[1 + index] = bhtToolkit:addConditionPairs(adIndex, airSaedConditionID, airSaedID, true)
+            AirDashToSAED[2 + index] = bhtToolkit:addConditionPairs(adIndex, airAedConditionID, airAedID, true)
+            AirDashToSAED[3 + index] = bhtToolkit:addTransitionEvent(adIndex, airSaedConditionID, airSaedEventID)
+            AirDashToSAED[4 + index] = bhtToolkit:addTransitionEvent(adIndex, airAedConditionID, airAedEventID)
+            index = index + 4
         end
 
         local oFromAirDashConditionID = 7548
         local oFromAirDashLateConditionID = 7534
         local tFromAirDashConditionID = 7550
-        bhtToolkit:getConditionObj(oFromAirDashConditionID):set_field("CmdType", bhtToolkit.CommandFsm.AtkAwithoutX)
-        bhtToolkit:getConditionObj(oFromAirDashLateConditionID):set_field("CmdType", bhtToolkit.CommandFsm.AtkAwithoutX)
-        bhtToolkit:getConditionObj(tFromAirDashConditionID):set_field("CmdType", bhtToolkit.CommandFsm.AtkXwithoutA)
+        local oFromAirDashCondition = bhtToolkit:getConditionObj(oFromAirDashConditionID)
+        local oFromAirDashLateCondition = bhtToolkit:getConditionObj(oFromAirDashLateConditionID)
+        local tFromAirDashCondition = bhtToolkit:getConditionObj(tFromAirDashConditionID)
+        bhtToolkit:setField(oFromAirDashCondition, "CmdType", bhtToolkit.CommandFsm.AtkAwithoutX, 1)
+        bhtToolkit:setField(oFromAirDashLateCondition, "CmdType", bhtToolkit.CommandFsm.AtkAwithoutX, 2)
+        bhtToolkit:setField(tFromAirDashCondition, "CmdType", bhtToolkit.CommandFsm.AtkXwithoutA, 3)
+    else
+        if AirDashToSAED then
+            for _, change in ipairs(AirDashToSAED) do
+                change.reset()
+            end
+        end
     end
 end
 
@@ -279,9 +480,11 @@ local function createUI()
         imgui.text("---Ready Stance---")
         isUpdated[10], uo.readyStanceToSAED.status = createCheckbox(uo.readyStanceToSAED)
         isUpdated[11], uo.readyStanceToSavageAxeCharge.status = createCheckbox(uo.readyStanceToSavageAxeCharge)
-        isUpdated[12], uo.readyStanceGuardHitSmallToSavageAxe.status = createCheckbox(uo.readyStanceGuardHitSmallToSavageAxe)
-        isUpdated[13], uo.readyStanceAnimationCancels.status = createCheckbox(uo.readyStanceAnimationCancels)
-        isUpdated[14], uo.readyStanceGuardHitWireUp.status = createCheckbox(uo.readyStanceGuardHitWireUp)
+        isUpdated[12], uo.readyStanceGuardHitSmallToSavageAxe.status =
+            createCheckbox(uo.readyStanceGuardHitSmallToSavageAxe)
+        isUpdated[13], uo.readyStanceToDashSlam.status = createCheckbox(uo.readyStanceToDashSlam)
+        isUpdated[14], uo.readyStanceAnimationCancels.status = createCheckbox(uo.readyStanceAnimationCancels)
+        isUpdated[15], uo.readyStanceGuardHitWireUp.status = createCheckbox(uo.readyStanceGuardHitWireUp)
         imgui.tree_pop()
     end
     for _, value in ipairs(isUpdated) do
