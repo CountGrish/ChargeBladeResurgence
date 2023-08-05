@@ -52,6 +52,10 @@ local function loadConfig()
                 status = true,
                 description = "Instant Savage Axe on successful Ready Stance",
             },
+            readyStanceToDashSlam = {
+                status = true,
+                description = "Dash Slam after Ready Stance",
+            },
             readyStanceGuardHitWireUp = {
                 status = true,
                 description = "Morphing Advance/Air Dash on successful Ready Stance",
@@ -301,6 +305,8 @@ local function modifyMoveset()
         end
     end
 
+    local readyStanceIndex1 = 726343640
+    local readyStanceIndex2 = 3934364626
     if config.userOptions.readyStanceToSavageAxeCharge.status then
         if not ReadyStanceToSavageAxeCharge then
             ReadyStanceToSavageAxeCharge = {}
@@ -314,6 +320,25 @@ local function modifyMoveset()
     else
         if ReadyStanceToSavageAxeCharge then
             for _, change in ipairs(ReadyStanceToSavageAxeCharge) do
+                change.reset()
+            end
+        end
+    end
+
+    if config.userOptions.readyStanceToDashSlam.status then
+        if not ReadyStanceToDashSlam then
+            ReadyStanceToDashSlam = {}
+        end
+        local dashSlamTransitionID = 4384
+        ReadyStanceToDashSlam[1] = bhtToolkit:replaceTransition(readyStanceIndex1, 7489, dashSlamTransitionID)
+        ReadyStanceToDashSlam[2] = bhtToolkit:replaceTransition(readyStanceIndex2, 7517, dashSlamTransitionID)
+        ReadyStanceToDashSlam[3] =
+            bhtToolkit:replaceTransition(readyStanceGuardHitSmallIndex1, 7498, dashSlamTransitionID)
+        ReadyStanceToDashSlam[4] =
+            bhtToolkit:replaceTransition(readyStanceGuardHitSmallIndex2, 7505, dashSlamTransitionID)
+    else
+        if ReadyStanceToDashSlam then
+            for _, change in ipairs(ReadyStanceToDashSlam) do
                 change.reset()
             end
         end
@@ -348,16 +373,19 @@ local function modifyMoveset()
             ReadyStanceGuardHitWireUp = {}
         end
         local index = 0
-        for _, readyStanceIndex in pairs({ readyStanceGuardHitSmallIndex1, readyStanceGuardHitSmallIndex2 }) do
-            ReadyStanceGuardHitWireUp[1 + index] =
-                bhtToolkit:addConditionPairs(readyStanceIndex, morphAdvanceConditionID, morphAdvanceTransitionID, true)
+        for _, readyStanceSmallHitIndex in pairs({ readyStanceGuardHitSmallIndex1, readyStanceGuardHitSmallIndex2 }) do
+            ReadyStanceGuardHitWireUp[1 + index] = bhtToolkit:addConditionPairs(
+                readyStanceSmallHitIndex,
+                morphAdvanceConditionID,
+                morphAdvanceTransitionID,
+                true
+            )
             ReadyStanceGuardHitWireUp[2 + index] =
-                bhtToolkit:addConditionPairs(readyStanceIndex, airDashConditionID, airDashTransitionID, true)
-
+                bhtToolkit:addConditionPairs(readyStanceSmallHitIndex, airDashConditionID, airDashTransitionID, true)
             ReadyStanceGuardHitWireUp[3 + index] =
-                bhtToolkit:addTransitionEvent(readyStanceIndex, morphAdvanceConditionID, morphAdvanceEventID)
+                bhtToolkit:addTransitionEvent(readyStanceSmallHitIndex, morphAdvanceConditionID, morphAdvanceEventID)
             ReadyStanceGuardHitWireUp[4 + index] =
-                bhtToolkit:addTransitionEvent(readyStanceIndex, airDashConditionID, airDashEventID)
+                bhtToolkit:addTransitionEvent(readyStanceSmallHitIndex, airDashConditionID, airDashEventID)
             index = 4
         end
     else
@@ -454,8 +482,9 @@ local function createUI()
         isUpdated[11], uo.readyStanceToSavageAxeCharge.status = createCheckbox(uo.readyStanceToSavageAxeCharge)
         isUpdated[12], uo.readyStanceGuardHitSmallToSavageAxe.status =
             createCheckbox(uo.readyStanceGuardHitSmallToSavageAxe)
-        isUpdated[13], uo.readyStanceAnimationCancels.status = createCheckbox(uo.readyStanceAnimationCancels)
-        isUpdated[14], uo.readyStanceGuardHitWireUp.status = createCheckbox(uo.readyStanceGuardHitWireUp)
+        isUpdated[13], uo.readyStanceToDashSlam.status = createCheckbox(uo.readyStanceToDashSlam)
+        isUpdated[14], uo.readyStanceAnimationCancels.status = createCheckbox(uo.readyStanceAnimationCancels)
+        isUpdated[15], uo.readyStanceGuardHitWireUp.status = createCheckbox(uo.readyStanceGuardHitWireUp)
         imgui.tree_pop()
     end
     for _, value in ipairs(isUpdated) do
