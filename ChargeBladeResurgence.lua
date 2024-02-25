@@ -524,7 +524,8 @@ re.on_draw_ui(function()
     end
 end)
 
---Reload on training area load
+--[[
+--Reload on training area load \\Is called many times
 sdk.hook(
     sdk.find_type_definition("snow.data.EquipDataManager"):get_method("addLvBuffCountOnTrainingArea"),
     nil,
@@ -540,6 +541,12 @@ end)
 
 --Reload on tent exit
 sdk.hook(sdk.find_type_definition("snow.stage.StageManager"):get_method("setTentFlag"), nil, function()
+    allowMovesetModify = true
+end)
+--]]
+
+--Reload on CB ctor
+sdk.hook(sdk.find_type_definition("snow.player.ChargeAxe"):get_method("resetStatusWorkWeapon"), nil, function()
     allowMovesetModify = true
 end)
 
