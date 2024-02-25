@@ -97,18 +97,17 @@ re.on_config_save(function()
 end)
 
 local function modifyMoveset()
-    if config.localOptions.enabled == false then
-        return
-    end
-
+    local isEnabled = config.localOptions.enabled
     local swordDodgeTransitionID = 246
     local counterPeakIndex = 2912959963
-    if config.userOptions.counterPeakBlockAfter.status then
+
+    if config.userOptions.counterPeakBlockAfter.status and isEnabled then
         if not CounterPeakBlockAfter then
             CounterPeakBlockAfter = {}
         end
         local blockAfterParryCondition = bhtToolkit:getConditionObj(7346)
-        CounterPeakBlockAfter[1] = bhtToolkit:setField(blockAfterParryCondition, "StartFrame", 10)
+        CounterPeakBlockAfter[1] =
+            bhtToolkit:setField(blockAfterParryCondition, "StartFrame", 10, "counterPeakBlockAfter")
     else
         if CounterPeakBlockAfter then
             for _, change in ipairs(CounterPeakBlockAfter) do
@@ -117,13 +116,13 @@ local function modifyMoveset()
         end
     end
 
-    if config.userOptions.counterPeakDodgeAfter.status then
+    if config.userOptions.counterPeakDodgeAfter.status and isEnabled then
         if not CounterPeakDodgeAfter then
             CounterPeakDodgeAfter = {}
         end
         local dodgeConditionID = 7494
         local dodgeCondition = bhtToolkit:getConditionObj(dodgeConditionID)
-        CounterPeakDodgeAfter[1] = bhtToolkit:setField(dodgeCondition, "StartFrame", 10)
+        CounterPeakDodgeAfter[1] = bhtToolkit:setField(dodgeCondition, "StartFrame", 10, "counterPeakDodgeAfter")
         CounterPeakDodgeAfter[2] =
             bhtToolkit:addConditionPairs(counterPeakIndex, dodgeConditionID, swordDodgeTransitionID, true)
     else
@@ -141,7 +140,7 @@ local function modifyMoveset()
     local airDashTransitionID = 4640
     local airDashConditionID = 6972
     local airDashEventID = 4042
-    if config.userOptions.counterPeakWireUp.status then
+    if config.userOptions.counterPeakWireUp.status and isEnabled then
         if not CounterPeakWireUp then
             CounterPeakWireUp = {}
         end
@@ -164,7 +163,7 @@ local function modifyMoveset()
     local saedIndex = 464731314
     local aedIndex = 562795953
     local haedIndex = 3652067243
-    if config.userOptions.saedFasterDodge.status then
+    if config.userOptions.saedFasterDodge.status and isEnabled then
         if not SaedFasterDodge then
             SaedFasterDodge = {}
         end
@@ -173,10 +172,10 @@ local function modifyMoveset()
         local swordDodgeConditionID = 7261
         -- saedSwordDodge
         local swordDodgeCondition = bhtToolkit:getConditionObj(swordDodgeConditionID)
-        SaedFasterDodge[1] = bhtToolkit:setField(swordDodgeCondition, "StartFrame", 50)
+        SaedFasterDodge[1] = bhtToolkit:setField(swordDodgeCondition, "StartFrame", 50, "saedFasterDodge1")
         -- saedAxeInstaDodge
         local axeDodgeCondition = bhtToolkit:getConditionObj(axeDodgeConditionID)
-        SaedFasterDodge[2] = bhtToolkit:setField(axeDodgeCondition, "StartFrame", 0)
+        SaedFasterDodge[2] = bhtToolkit:setField(axeDodgeCondition, "StartFrame", 0, "saedFasterDodge2")
         SaedFasterDodge[3] = bhtToolkit:addConditionPairs(saedIndex, axeDodgeConditionID, axeDodgeTransitionID, true)
         -- hopSAED
         SaedFasterDodge[5] = bhtToolkit:replaceCondition(hopSaedIndex, axeDodgeConditionID, swordDodgeConditionID)
@@ -198,7 +197,7 @@ local function modifyMoveset()
         end
     end
 
-    if config.userOptions.saedFasterBlock.status then
+    if config.userOptions.saedFasterBlock.status and isEnabled then
         if not SaedFasterBlock then
             SaedFasterBlock = {}
         end
@@ -216,14 +215,14 @@ local function modifyMoveset()
         end
     end
 
-    if config.userOptions.saedUnlockAngle.status then
+    if config.userOptions.saedUnlockAngle.status and isEnabled then
         if not SaedUnlockAngle then
             SaedUnlockAngle = {}
         end
         local saedStartEventID = 4376
         local saedStartEvent = bhtToolkit:getEventObject(saedStartEventID)
-        SaedUnlockAngle[1] = bhtToolkit:setField(saedStartEvent, "_LimitAngle", 0)
-        SaedUnlockAngle[2] = bhtToolkit:setField(saedStartEvent, "_AngleSetType", 1)
+        SaedUnlockAngle[1] = bhtToolkit:setField(saedStartEvent, "_LimitAngle", 0, "saedUnlockAngle1")
+        SaedUnlockAngle[2] = bhtToolkit:setField(saedStartEvent, "_AngleSetType", 1, "saedUnlockAngle2")
         SaedUnlockAngle[3] = bhtToolkit:addTransitionEvent(4286945847, 7237, saedStartEventID) --4527
     else
         if SaedUnlockAngle then
@@ -233,11 +232,10 @@ local function modifyMoveset()
         end
     end
 
-    if config.userOptions.readyStanceAnimationCancels.status then
+    if config.userOptions.readyStanceAnimationCancels.status and isEnabled then
         if not ReadyStanceAnimationCancels then
             ReadyStanceAnimationCancels = {}
         end
-
         if readyStanceConditions == nil then
             readyStanceConditions = bhtToolkit:getAllConditions_SpecificState({ 4043, 4616 })
         end
@@ -245,7 +243,8 @@ local function modifyMoveset()
             local index = 1
             for _, conditionsInStates in pairs(readyStanceConditions) do
                 for _, condition in pairs(conditionsInStates) do
-                    ReadyStanceAnimationCancels[index] = bhtToolkit:setField(condition, "StartFrame", 0, index)
+                    ReadyStanceAnimationCancels[index] =
+                        bhtToolkit:setField(condition, "StartFrame", 0, "readyStanceAnimationCancels")
                     index = index + 1
                 end
             end
@@ -260,7 +259,8 @@ local function modifyMoveset()
 
     local readyStanceGuardHitSmallIndex1 = 4213486657
     local readyStanceGuardHitSmallIndex2 = 1277383964
-    if config.userOptions.readyStanceToSAED.status then
+
+    if config.userOptions.readyStanceToSAED.status and isEnabled then
         if not ReadyStanceToSAED then
             ReadyStanceToSAED = {}
         end
@@ -275,15 +275,31 @@ local function modifyMoveset()
         local oFromGuardHitCondition2 = bhtToolkit:getConditionObj(oFromGuardHitCondition2ID)
         local tFromGuardHitCondition2 = bhtToolkit:getConditionObj(tFromGuardHitCondition2ID)
         local saedFromGuardHitCondition = bhtToolkit:getConditionObj(saedFromGuardHitConditionID)
-        ReadyStanceToSAED[1] =
-            bhtToolkit:setField(oFromGuardHitCondition, "CmdType", bhtToolkit.CommandFsm.AtkAwithoutX)
-        ReadyStanceToSAED[2] =
-            bhtToolkit:setField(tFromGuardHitCondition, "CmdType", bhtToolkit.CommandFsm.AtkXwithoutA)
-        ReadyStanceToSAED[3] =
-            bhtToolkit:setField(oFromGuardHitCondition2, "CmdType", bhtToolkit.CommandFsm.AtkAwithoutX)
-        ReadyStanceToSAED[4] =
-            bhtToolkit:setField(tFromGuardHitCondition2, "CmdType", bhtToolkit.CommandFsm.AtkXwithoutA)
-        ReadyStanceToSAED[5] = bhtToolkit:setField(saedFromGuardHitCondition, "StartFrame", 0)
+        ReadyStanceToSAED[1] = bhtToolkit:setField(
+            oFromGuardHitCondition,
+            "CmdType",
+            bhtToolkit.CommandFsm.AtkAwithoutX,
+            "readyStanceToSAED1"
+        )
+        ReadyStanceToSAED[2] = bhtToolkit:setField(
+            tFromGuardHitCondition,
+            "CmdType",
+            bhtToolkit.CommandFsm.AtkXwithoutA,
+            "readyStanceToSAED2"
+        )
+        ReadyStanceToSAED[3] = bhtToolkit:setField(
+            oFromGuardHitCondition2,
+            "CmdType",
+            bhtToolkit.CommandFsm.AtkAwithoutX,
+            "readyStanceToSAED3"
+        )
+        ReadyStanceToSAED[4] = bhtToolkit:setField(
+            tFromGuardHitCondition2,
+            "CmdType",
+            bhtToolkit.CommandFsm.AtkXwithoutA,
+            "readyStanceToSAED4"
+        )
+        ReadyStanceToSAED[5] = bhtToolkit:setField(saedFromGuardHitCondition, "StartFrame", 0, "readyStanceToSAED5")
 
         ReadyStanceToSAED[6] = bhtToolkit:addConditionPairs(
             readyStanceGuardHitSmallIndex1,
@@ -307,7 +323,7 @@ local function modifyMoveset()
 
     local readyStanceIndex1 = 726343640
     local readyStanceIndex2 = 3934364626
-    if config.userOptions.readyStanceToCondensedSlashCharge.status then
+    if config.userOptions.readyStanceToCondensedSlashCharge.status and isEnabled then
         if not ReadyStanceToCondensedSlashCharge then
             ReadyStanceToCondensedSlashCharge = {}
         end
@@ -325,7 +341,7 @@ local function modifyMoveset()
         end
     end
 
-    if config.userOptions.readyStanceToDashSlam.status then
+    if config.userOptions.readyStanceToDashSlam.status and isEnabled then
         if not ReadyStanceToDashSlam then
             ReadyStanceToDashSlam = {}
         end
@@ -347,7 +363,7 @@ local function modifyMoveset()
     -- local condensedSpinningSlashTransitionID = 4411 -- Instant Chainsaw; Unused
     local condensedSpinningSlashTransitionID = 4319 -- Instant Chainsaw/Slash
     local condensedSpinningSlashEventID = 4315 -- Instant Chainsaw/Slash
-    if config.userOptions.readyStanceGuardHitSmallToCondensedSlash.status then
+    if config.userOptions.readyStanceGuardHitSmallToCondensedSlash.status and isEnabled then
         if not ReadyStanceGuardHitSmallToCondensedSlash then
             ReadyStanceGuardHitSmallToCondensedSlash = {}
         end
@@ -368,7 +384,7 @@ local function modifyMoveset()
         end
     end
 
-    if config.userOptions.readyStanceGuardHitWireUp.status then
+    if config.userOptions.readyStanceGuardHitWireUp.status and isEnabled then
         if not ReadyStanceGuardHitWireUp then
             ReadyStanceGuardHitWireUp = {}
         end
@@ -396,7 +412,7 @@ local function modifyMoveset()
         end
     end
 
-    if config.userOptions.guardHitSmallToCondensedSlash.status then
+    if config.userOptions.guardHitSmallToCondensedSlash.status and isEnabled then
         if not GuardHitSmallToCondensedSlash then
             GuardHitSmallToCondensedSlash = {}
         end
@@ -413,7 +429,7 @@ local function modifyMoveset()
         end
     end
 
-    if config.userOptions.airDashToSAED.status then
+    if config.userOptions.airDashToSAED.status and isEnabled then
         if not AirDashToSAED then
             AirDashToSAED = {}
         end
@@ -442,9 +458,9 @@ local function modifyMoveset()
         local oFromAirDashCondition = bhtToolkit:getConditionObj(oFromAirDashConditionID)
         local oFromAirDashLateCondition = bhtToolkit:getConditionObj(oFromAirDashLateConditionID)
         local tFromAirDashCondition = bhtToolkit:getConditionObj(tFromAirDashConditionID)
-        bhtToolkit:setField(oFromAirDashCondition, "CmdType", bhtToolkit.CommandFsm.AtkAwithoutX, 1)
-        bhtToolkit:setField(oFromAirDashLateCondition, "CmdType", bhtToolkit.CommandFsm.AtkAwithoutX, 2)
-        bhtToolkit:setField(tFromAirDashCondition, "CmdType", bhtToolkit.CommandFsm.AtkXwithoutA, 3)
+        bhtToolkit:setField(oFromAirDashCondition, "CmdType", bhtToolkit.CommandFsm.AtkAwithoutX, "airDashToSAED1")
+        bhtToolkit:setField(oFromAirDashLateCondition, "CmdType", bhtToolkit.CommandFsm.AtkAwithoutX, "airDashToSAED2")
+        bhtToolkit:setField(tFromAirDashCondition, "CmdType", bhtToolkit.CommandFsm.AtkXwithoutA, "airDashToSAED3")
     else
         if AirDashToSAED then
             for _, change in ipairs(AirDashToSAED) do
@@ -479,7 +495,8 @@ local function createUI()
         isUpdated[9], uo.guardHitSmallToCondensedSlash.status = createCheckbox(uo.guardHitSmallToCondensedSlash)
         imgui.text("---Ready Stance---")
         isUpdated[10], uo.readyStanceToSAED.status = createCheckbox(uo.readyStanceToSAED)
-        isUpdated[11], uo.readyStanceToCondensedSlashCharge.status = createCheckbox(uo.readyStanceToCondensedSlashCharge)
+        isUpdated[11], uo.readyStanceToCondensedSlashCharge.status =
+            createCheckbox(uo.readyStanceToCondensedSlashCharge)
         isUpdated[12], uo.readyStanceGuardHitSmallToCondensedSlash.status =
             createCheckbox(uo.readyStanceGuardHitSmallToCondensedSlash)
         isUpdated[13], uo.readyStanceToDashSlam.status = createCheckbox(uo.readyStanceToDashSlam)
@@ -499,7 +516,11 @@ re.on_draw_ui(function()
     local isUpdated = createUI()
     if isUpdated then
         json.dump_file(configFile, config)
-        allowMovesetModify = true
+        if not config.localOptions.enabled then
+            modifyMoveset()
+        else
+            allowMovesetModify = true
+        end
     end
 end)
 
