@@ -3,6 +3,7 @@ local configFile = "ChargeBladeResurgence.json"
 local allowMovesetModify = false
 local playerManager
 local readyStanceConditions
+local isChainsawToggled = false
 
 ---@return table
 local function loadConfig()
@@ -68,10 +69,11 @@ local function loadConfig()
                 status = true,
                 description = "Air Dash into AED/UED",
             },
-            keepChainsawBuffOnSwitch = {
+
+            keepChainsawBuff = {
                 status = true,
-                description = "Chainsaw buff persists after switch"
-            }
+                description = "Maintain Savage Axe buff through morphing (Requires shield buff)",
+            },
         },
     }
 
@@ -506,8 +508,9 @@ local function createUI()
         isUpdated[13], uo.readyStanceToDashSlam.status = createCheckbox(uo.readyStanceToDashSlam)
         isUpdated[14], uo.readyStanceAnimationCancels.status = createCheckbox(uo.readyStanceAnimationCancels)
         isUpdated[15], uo.readyStanceGuardHitWireUp.status = createCheckbox(uo.readyStanceGuardHitWireUp)
-        imgui.text("---Chainsaw---")
-        isUpdated[16], uo.keepChainsawBuffOnSwitch.status = createCheckbox(uo.keepChainsawBuffOnSwitch)
+        imgui.text("---Savage Axe---")
+        isUpdated[16], uo.keepChainsawBuff.status = createCheckbox(uo.keepChainsawBuff)
+
         imgui.tree_pop()
     end
     for _, value in ipairs(isUpdated) do
@@ -531,18 +534,22 @@ re.on_draw_ui(function()
 end)
 
 sdk.hook(sdk.find_type_definition("snow.player.ChargeAxe"):get_method("update"), function(args)
-    if not config.localOptions.enabled or not config.userOptions.keepChainsawBuffOnSwitch then
+    if not config.localOptions.enabled or not config.userOptions.keepChainsawBuff.status then
         return
     end
     local chargeAxe = sdk.to_managed_object(args[2])
-    local isChainsawAllowed = false
-    --if not chargeAxe:get_type_definition():is_a("snow.player.ChargeAxe") then
-    --    return
-    --end
-    if chargeAxe:get_field("_ShieldBuffTimer") > 0 then
-        isChainsawAllowed = false
+    local isChainsawStyleOn = chargeAxe:isChainsawType()
+    if not isChainsawStyleOn then
+        chargeAxe:set_field("_IsChainsawBuff", false)
+        isChainsawToggled = false
+        return
     end
-    chargeAxe:set_field("_IsChainsawBuff", isChainsawAllowed)
+    isChainsawToggled = chargeAxe:get_field("_IsChainsawBuff") or isChainsawToggled
+    if isChainsawToggled and chargeAxe:get_field("_ShieldBuffTimer") > 0 then
+        chargeAxe:set_field("_IsChainsawBuff", true)
+        return
+    end
+    isChainsawToggled = false
 end)
 
 --[[
