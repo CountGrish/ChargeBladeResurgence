@@ -68,6 +68,10 @@ local function loadConfig()
                 status = true,
                 description = "Air Dash into AED/UED",
             },
+            keepChainsawBuffOnSwitch = {
+                status = true,
+                description = "Chainsaw buff persists after switch"
+            }
         },
     }
 
@@ -502,6 +506,8 @@ local function createUI()
         isUpdated[13], uo.readyStanceToDashSlam.status = createCheckbox(uo.readyStanceToDashSlam)
         isUpdated[14], uo.readyStanceAnimationCancels.status = createCheckbox(uo.readyStanceAnimationCancels)
         isUpdated[15], uo.readyStanceGuardHitWireUp.status = createCheckbox(uo.readyStanceGuardHitWireUp)
+        imgui.text("---Chainsaw---")
+        isUpdated[16], uo.keepChainsawBuffOnSwitch.status = createCheckbox(uo.keepChainsawBuffOnSwitch)
         imgui.tree_pop()
     end
     for _, value in ipairs(isUpdated) do
@@ -524,6 +530,21 @@ re.on_draw_ui(function()
     end
 end)
 
+sdk.hook(sdk.find_type_definition("snow.player.ChargeAxe"):get_method("update"), function(args)
+    if not config.localOptions.enabled or not config.userOptions.keepChainsawBuffOnSwitch then
+        return
+    end
+    local chargeAxe = sdk.to_managed_object(args[2])
+    local isChainsawAllowed = false
+    --if not chargeAxe:get_type_definition():is_a("snow.player.ChargeAxe") then
+    --    return
+    --end
+    if chargeAxe:get_field("_ShieldBuffTimer") > 0 then
+        isChainsawAllowed = false
+    end
+    chargeAxe:set_field("_IsChainsawBuff", isChainsawAllowed)
+end)
+
 --[[
 --Reload on training area load \\Is called many times
 sdk.hook(
@@ -544,7 +565,6 @@ sdk.hook(sdk.find_type_definition("snow.stage.StageManager"):get_method("setTent
     allowMovesetModify = true
 end)
 --]]
-
 --Reload on CB ctor
 sdk.hook(sdk.find_type_definition("snow.player.ChargeAxe"):get_method("resetStatusWorkWeapon"), nil, function()
     allowMovesetModify = true
