@@ -69,6 +69,7 @@ local function loadConfig()
                 status = true,
                 description = "Air Dash into AED/UED",
             },
+
             keepChainsawBuff = {
                 status = true,
                 description = "Maintain Savage Axe buff through morphing (Requires shield buff)",
@@ -509,6 +510,7 @@ local function createUI()
         isUpdated[15], uo.readyStanceGuardHitWireUp.status = createCheckbox(uo.readyStanceGuardHitWireUp)
         imgui.text("---Savage Axe---")
         isUpdated[16], uo.keepChainsawBuff.status = createCheckbox(uo.keepChainsawBuff)
+
         imgui.tree_pop()
     end
     for _, value in ipairs(isUpdated) do
