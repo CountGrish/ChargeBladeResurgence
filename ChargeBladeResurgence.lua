@@ -233,6 +233,9 @@ local function modifyMoveset()
         SaedUnlockAngle[1] = bhtToolkit:setField(saedStartEvent, "_LimitAngle", 0, "saedUnlockAngle1")
         SaedUnlockAngle[2] = bhtToolkit:setField(saedStartEvent, "_AngleSetType", 1, "saedUnlockAngle2")
         SaedUnlockAngle[3] = bhtToolkit:addTransitionEvent(4286945847, 7237, saedStartEventID) --4527
+        local SaedCancelCondition = bhtToolkit:getConditionObj(7269)
+        SaedUnlockAngle[4] =
+            bhtToolkit:setField(SaedCancelCondition, "CmdType", bhtToolkit.CommandFsm.AtkX, "saedCancel")
     else
         if SaedUnlockAngle then
             for _, change in ipairs(SaedUnlockAngle) do
