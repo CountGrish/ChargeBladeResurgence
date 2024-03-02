@@ -470,9 +470,16 @@ local function modifyMoveset()
         local oFromAirDashCondition = bhtToolkit:getConditionObj(oFromAirDashConditionID)
         local oFromAirDashLateCondition = bhtToolkit:getConditionObj(oFromAirDashLateConditionID)
         local tFromAirDashCondition = bhtToolkit:getConditionObj(tFromAirDashConditionID)
-        bhtToolkit:setField(oFromAirDashCondition, "CmdType", bhtToolkit.CommandFsm.AtkAwithoutX, "airDashToSAED1")
-        bhtToolkit:setField(oFromAirDashLateCondition, "CmdType", bhtToolkit.CommandFsm.AtkAwithoutX, "airDashToSAED2")
-        bhtToolkit:setField(tFromAirDashCondition, "CmdType", bhtToolkit.CommandFsm.AtkXwithoutA, "airDashToSAED3")
+        AirDashToSAED[1 + index] =
+            bhtToolkit:setField(oFromAirDashCondition, "CmdType", bhtToolkit.CommandFsm.AtkAwithoutX, "airDashToSAED1")
+        AirDashToSAED[2 + index] = bhtToolkit:setField(
+            oFromAirDashLateCondition,
+            "CmdType",
+            bhtToolkit.CommandFsm.AtkAwithoutX,
+            "airDashToSAED2"
+        )
+        AirDashToSAED[3 + index] =
+            bhtToolkit:setField(tFromAirDashCondition, "CmdType", bhtToolkit.CommandFsm.AtkXwithoutA, "airDashToSAED3")
     else
         if AirDashToSAED then
             for _, change in ipairs(AirDashToSAED) do
