@@ -75,7 +75,7 @@ local function loadConfig()
             },
             guardCounterBuff = {
                 status = true,
-                description = "Extend shield buff by 5 seconds on guard point/Ready Stance block (Requires shield buff)",
+                description = "Extend shield buff on guard point/Ready Stance block (Requires shield buff)",
             },
         },
     }
