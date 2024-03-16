@@ -69,10 +69,13 @@ local function loadConfig()
                 status = true,
                 description = "Air Dash into AED/UED",
             },
-
             keepChainsawBuff = {
                 status = true,
                 description = "Maintain Savage Axe buff through morphing (Requires shield buff)",
+            },
+            guardCounterBuff = {
+                status = true,
+                description = "Extend shield buff by 5 seconds on guard point/Ready Stance block (Requires shield buff)",
             },
         },
     }
@@ -230,6 +233,9 @@ local function modifyMoveset()
         SaedUnlockAngle[1] = bhtToolkit:setField(saedStartEvent, "_LimitAngle", 0, "saedUnlockAngle1")
         SaedUnlockAngle[2] = bhtToolkit:setField(saedStartEvent, "_AngleSetType", 1, "saedUnlockAngle2")
         SaedUnlockAngle[3] = bhtToolkit:addTransitionEvent(4286945847, 7237, saedStartEventID) --4527
+        local SaedCancelCondition = bhtToolkit:getConditionObj(7269)
+        SaedUnlockAngle[4] =
+            bhtToolkit:setField(SaedCancelCondition, "CmdType", bhtToolkit.CommandFsm.AtkX, "saedCancel")
     else
         if SaedUnlockAngle then
             for _, change in ipairs(SaedUnlockAngle) do
@@ -464,9 +470,16 @@ local function modifyMoveset()
         local oFromAirDashCondition = bhtToolkit:getConditionObj(oFromAirDashConditionID)
         local oFromAirDashLateCondition = bhtToolkit:getConditionObj(oFromAirDashLateConditionID)
         local tFromAirDashCondition = bhtToolkit:getConditionObj(tFromAirDashConditionID)
-        bhtToolkit:setField(oFromAirDashCondition, "CmdType", bhtToolkit.CommandFsm.AtkAwithoutX, "airDashToSAED1")
-        bhtToolkit:setField(oFromAirDashLateCondition, "CmdType", bhtToolkit.CommandFsm.AtkAwithoutX, "airDashToSAED2")
-        bhtToolkit:setField(tFromAirDashCondition, "CmdType", bhtToolkit.CommandFsm.AtkXwithoutA, "airDashToSAED3")
+        AirDashToSAED[1 + index] =
+            bhtToolkit:setField(oFromAirDashCondition, "CmdType", bhtToolkit.CommandFsm.AtkAwithoutX, "airDashToSAED1")
+        AirDashToSAED[2 + index] = bhtToolkit:setField(
+            oFromAirDashLateCondition,
+            "CmdType",
+            bhtToolkit.CommandFsm.AtkAwithoutX,
+            "airDashToSAED2"
+        )
+        AirDashToSAED[3 + index] =
+            bhtToolkit:setField(tFromAirDashCondition, "CmdType", bhtToolkit.CommandFsm.AtkXwithoutA, "airDashToSAED3")
     else
         if AirDashToSAED then
             for _, change in ipairs(AirDashToSAED) do
@@ -499,18 +512,18 @@ local function createUI()
         isUpdated[8], uo.counterPeakWireUp.status = createCheckbox(uo.counterPeakWireUp)
         imgui.text("---Guard Hit---")
         isUpdated[9], uo.guardHitSmallToCondensedSlash.status = createCheckbox(uo.guardHitSmallToCondensedSlash)
+        isUpdated[10], uo.guardCounterBuff.status = createCheckbox(uo.guardCounterBuff)
         imgui.text("---Ready Stance---")
-        isUpdated[10], uo.readyStanceToSAED.status = createCheckbox(uo.readyStanceToSAED)
-        isUpdated[11], uo.readyStanceToCondensedSlashCharge.status =
+        isUpdated[11], uo.readyStanceToSAED.status = createCheckbox(uo.readyStanceToSAED)
+        isUpdated[12], uo.readyStanceToCondensedSlashCharge.status =
             createCheckbox(uo.readyStanceToCondensedSlashCharge)
-        isUpdated[12], uo.readyStanceGuardHitSmallToCondensedSlash.status =
+        isUpdated[13], uo.readyStanceGuardHitSmallToCondensedSlash.status =
             createCheckbox(uo.readyStanceGuardHitSmallToCondensedSlash)
-        isUpdated[13], uo.readyStanceToDashSlam.status = createCheckbox(uo.readyStanceToDashSlam)
-        isUpdated[14], uo.readyStanceAnimationCancels.status = createCheckbox(uo.readyStanceAnimationCancels)
-        isUpdated[15], uo.readyStanceGuardHitWireUp.status = createCheckbox(uo.readyStanceGuardHitWireUp)
+        isUpdated[14], uo.readyStanceToDashSlam.status = createCheckbox(uo.readyStanceToDashSlam)
+        isUpdated[15], uo.readyStanceAnimationCancels.status = createCheckbox(uo.readyStanceAnimationCancels)
+        isUpdated[16], uo.readyStanceGuardHitWireUp.status = createCheckbox(uo.readyStanceGuardHitWireUp)
         imgui.text("---Savage Axe---")
-        isUpdated[16], uo.keepChainsawBuff.status = createCheckbox(uo.keepChainsawBuff)
-
+        isUpdated[17], uo.keepChainsawBuff.status = createCheckbox(uo.keepChainsawBuff)
         imgui.tree_pop()
     end
     for _, value in ipairs(isUpdated) do
@@ -550,6 +563,16 @@ sdk.hook(sdk.find_type_definition("snow.player.ChargeAxe"):get_method("update"),
         return
     end
     isChainsawToggled = false
+end)
+
+sdk.hook(sdk.find_type_definition("snow.player.ChargeAxe"):get_method("createGuardCounterShell"), function(args)
+    if not config.localOptions.enabled or not config.userOptions.guardCounterBuff.status then
+        return
+    end
+    local chargeAxe = sdk.to_managed_object(args[2])
+    local additionalTime = 5 * 60
+    local currentShieldBuffTime = chargeAxe:get_field("_ShieldBuffTimer")
+    chargeAxe:set_field("_ShieldBuffTimer", currentShieldBuffTime + additionalTime)
 end)
 
 --[[
