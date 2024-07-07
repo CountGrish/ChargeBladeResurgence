@@ -617,6 +617,7 @@ end)
 --Reload on CB ctor
 sdk.hook(sdk.find_type_definition("snow.player.ChargeAxe"):get_method("resetStatusWorkWeapon"), nil, function()
     allowMovesetModify = true
+    readyStanceConditions = nil
 end)
 
 re.on_frame(function()
