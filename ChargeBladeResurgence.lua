@@ -216,6 +216,7 @@ local function modifyMoveset()
         SaedFasterBlock[2] = bhtToolkit:addConditionPairs(hopSaedIndex, morphConditionID, morphTransitionID, true)
         SaedFasterBlock[3] = bhtToolkit:addConditionPairs(aedIndex, morphConditionID, morphTransitionID, true)
         SaedFasterBlock[4] = bhtToolkit:addConditionPairs(haedIndex, morphConditionID, morphTransitionID, true)
+        SaedFasterBlock[5] = bhtToolkit:setField(bhtToolkit:getConditionObj(morphConditionID), "EndFrame", 40, "saedFasterBlockEndFrame")
     else
         if SaedFasterBlock then
             for _, change in ipairs(SaedFasterBlock) do
