@@ -572,7 +572,6 @@ sdk.hook(sdk.find_type_definition("snow.player.ChargeAxe"):get_method("update"),
     local chargeAxe = sdk.to_managed_object(args[2])
     local isChainsawStyleOn = chargeAxe:isChainsawType()
     if not isChainsawStyleOn then
-        chargeAxe:set_field("_IsChainsawBuff", false)
         isChainsawToggled = false
         return
     end
@@ -594,27 +593,6 @@ sdk.hook(sdk.find_type_definition("snow.player.ChargeAxe"):get_method("createGua
     chargeAxe:set_field("_ShieldBuffTimer", currentShieldBuffTime + additionalTime)
 end)
 
---[[
---Reload on training area load \\Is called many times
-sdk.hook(
-    sdk.find_type_definition("snow.data.EquipDataManager"):get_method("addLvBuffCountOnTrainingArea"),
-    nil,
-    function()
-        allowMovesetModify = true
-    end
-)
-
---Reload on quest start
-sdk.hook(sdk.find_type_definition("snow.stage.StageManager"):get_method("onQuestStart"), nil, function()
-    allowMovesetModify = true
-end)
-
---Reload on tent exit
-sdk.hook(sdk.find_type_definition("snow.stage.StageManager"):get_method("setTentFlag"), nil, function()
-    allowMovesetModify = true
-end)
---]]
---Reload on CB ctor
 sdk.hook(sdk.find_type_definition("snow.player.ChargeAxe"):get_method("resetStatusWorkWeapon"), nil, function()
     allowMovesetModify = true
     readyStanceConditions = nil
