@@ -1,0 +1,2 @@
+- Install REFramework. Can be found here: https://www.nexusmods.com/monsterhunterrise/mods/26
+- Extract the folder reframework into your Monster Hunter Rise game install folder. (Located in ...\Steam\steamapps\common\MonsterHunterRise)

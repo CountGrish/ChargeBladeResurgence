@@ -1,4 +1,8 @@
 *
 !.gitignore
+!.github/
+!.github/**
+!HOW TO INSTALL.txt
 !ChargeBladeResurgence.lua
-!ChargeBladeResurgenceDependencies\*
+!ChargeBladeResurgenceDependencies/
+!ChargeBladeResurgenceDependencies/**
