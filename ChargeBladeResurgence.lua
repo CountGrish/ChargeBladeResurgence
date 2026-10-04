@@ -77,6 +77,10 @@ local function loadConfig()
                 status = true,
                 description = "Extend shield buff on guard point/Ready Stance block (Requires shield buff)",
             },
+            expandRapidMorphAffectedAnimations = {
+                status = true,
+                description = "Apply Rapid Morph's speed bonus to additional animations",
+            },
         },
     }
 
@@ -216,7 +220,8 @@ local function modifyMoveset()
         SaedFasterBlock[2] = bhtToolkit:addConditionPairs(hopSaedIndex, morphConditionID, morphTransitionID, true)
         SaedFasterBlock[3] = bhtToolkit:addConditionPairs(aedIndex, morphConditionID, morphTransitionID, true)
         SaedFasterBlock[4] = bhtToolkit:addConditionPairs(haedIndex, morphConditionID, morphTransitionID, true)
-        SaedFasterBlock[5] = bhtToolkit:setField(bhtToolkit:getConditionObj(morphConditionID), "EndFrame", 40, "saedFasterBlockEndFrame")
+        SaedFasterBlock[5] = bhtToolkit:setField(bhtToolkit:getConditionObj(morphConditionID), "EndFrame", 40,
+            "saedFasterBlockEndFrame")
     else
         if SaedFasterBlock then
             for _, change in ipairs(SaedFasterBlock) do
@@ -234,7 +239,7 @@ local function modifyMoveset()
         SaedUnlockAngle[1] = bhtToolkit:setField(saedStartEvent, "_LimitAngle", 0, "saedUnlockAngle1")
         SaedUnlockAngle[2] = bhtToolkit:setField(saedStartEvent, "_AngleSetType", 1, "saedUnlockAngle2")
         SaedUnlockAngle[3] = bhtToolkit:addTransitionEvent(4286945847, 7237, saedStartEventID) --4527
-        local SaedCancelCondition = bhtToolkit:getConditionObj(7269) --4276
+        local SaedCancelCondition = bhtToolkit:getConditionObj(7269)                           --4276
         SaedUnlockAngle[4] =
             bhtToolkit:setField(SaedCancelCondition, "CmdType", bhtToolkit.CommandFsm.AtkX, "saedCancel")
         local SaedCancelConditionNoPhials = bhtToolkit:getConditionObj(7272) --4277
@@ -296,11 +301,11 @@ local function modifyMoveset()
             ReadyStanceToSAED = {}
         end
         local saedFromGuardHitTransitionID = 4044 --//2522966112 | 4235
-        local saedFromGuardHitConditionID = 504 --//2522966112 | 4235
-        local oFromGuardHitConditionID = 7504 --// 4621
-        local tFromGuardHitConditionID = 7506 --// 4621
-        local oFromGuardHitCondition2ID = 7497 --// 4622
-        local tFromGuardHitCondition2ID = 7499 --// 4622
+        local saedFromGuardHitConditionID = 504   --//2522966112 | 4235
+        local oFromGuardHitConditionID = 7504     --// 4621
+        local tFromGuardHitConditionID = 7506     --// 4621
+        local oFromGuardHitCondition2ID = 7497    --// 4622
+        local tFromGuardHitCondition2ID = 7499    --// 4622
         local oFromGuardHitCondition = bhtToolkit:getConditionObj(oFromGuardHitConditionID)
         local tFromGuardHitCondition = bhtToolkit:getConditionObj(tFromGuardHitConditionID)
         local oFromGuardHitCondition2 = bhtToolkit:getConditionObj(oFromGuardHitCondition2ID)
@@ -393,7 +398,7 @@ local function modifyMoveset()
 
     -- local condensedSpinningSlashTransitionID = 4411 -- Instant Chainsaw; Unused
     local condensedSpinningSlashTransitionID = 4319 -- Instant Chainsaw/Slash
-    local condensedSpinningSlashEventID = 4315 -- Instant Chainsaw/Slash
+    local condensedSpinningSlashEventID = 4315      -- Instant Chainsaw/Slash
     if config.userOptions.readyStanceGuardHitSmallToCondensedSlash.status and isEnabled then
         if not ReadyStanceGuardHitSmallToCondensedSlash then
             ReadyStanceGuardHitSmallToCondensedSlash = {}
@@ -506,6 +511,57 @@ local function modifyMoveset()
             end
         end
     end
+
+    if config.userOptions.expandRapidMorphAffectedAnimations.status and isEnabled then
+        if not ExpandRapidMorphAffectedAnimations then
+            ExpandRapidMorphAffectedAnimations = {}
+        end
+        local morphSkillId = 107
+        local morphLvl = bhtToolkit:getArmorSkillLevel(playerManager.playerManager, morphSkillId)
+        local speedValuesByMorphLvl = { 1.1, 1.2, 1.3 }
+        local newSpeed = speedValuesByMorphLvl[morphLvl] or 1.0
+        local affectedSkills = {
+            -- AED
+            8862, -- start from sword + saed 4161
+            8565, -- start from axe + saed 4021
+            --9146, -- start 2nd state 4267
+            --9152, -- start 2nd state no bottle 4269
+            9145, -- end recovery 4268
+            -- SAED
+            8586, -- start from block 4044
+            9319, -- start from counter peak 4317
+            --9120, -- start 2nd state from shared 4252
+            --9176, -- start 2nd state no bottle 4277
+            --9169, -- start 3rd state from shared 4276
+            9168, -- end recovery 4257
+            -- Axe Hopper
+            9341, -- jump start 4323
+            9358, -- jump start 2nd state 4326
+            9420, -- aed end recovery 4345
+            9449, -- saed end recovery 4355
+            -- Air Dash
+            9801, -- jump start 4640
+            -- Counter Morph Slash
+            9382, -- axe to sword morph 4335
+            -- Morph Peak
+            9314, -- smash 1st state 4316
+            9483, -- smash 2nd state 4372
+            -- Ready Stance
+            9772, -- axe element discharge II 4625
+            9775, -- axe element discharge I 4626
+            8808, -- axe dash slam 4135
+        }
+        for i, affectedSkill in ipairs(affectedSkills) do
+            ExpandRapidMorphAffectedAnimations[i] =
+                bhtToolkit:setAnimationSpeed(affectedSkill, newSpeed)
+        end
+    else
+        if ExpandRapidMorphAffectedAnimations then
+            for _, change in ipairs(ExpandRapidMorphAffectedAnimations) do
+                change.reset()
+            end
+        end
+    end
 end
 
 ---@param option table
@@ -543,6 +599,9 @@ local function createUI()
         isUpdated[16], uo.readyStanceGuardHitWireUp.status = createCheckbox(uo.readyStanceGuardHitWireUp)
         imgui.text("---Savage Axe---")
         isUpdated[17], uo.keepChainsawBuff.status = createCheckbox(uo.keepChainsawBuff)
+        imgui.text("---Other---")
+        isUpdated[18], uo.expandRapidMorphAffectedAnimations.status = createCheckbox(uo
+            .expandRapidMorphAffectedAnimations)
         imgui.tree_pop()
     end
     for _, value in ipairs(isUpdated) do
@@ -597,6 +656,11 @@ sdk.hook(sdk.find_type_definition("snow.player.ChargeAxe"):get_method("resetStat
     allowMovesetModify = true
     readyStanceConditions = nil
 end)
+
+sdk.hook(sdk.find_type_definition("snow.player.PlayerManager"):get_method("sendMasterPlayerEquipSkill"),
+    function() -- Called when leaving item box after changing decorations
+        allowMovesetModify = true
+    end)
 
 re.on_frame(function()
     if not allowMovesetModify then

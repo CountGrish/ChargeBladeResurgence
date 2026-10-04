@@ -352,4 +352,38 @@ function behaviorTreeToolKit.getAllConditions_SpecificState(self, statesIndex)
     return nil
 end
 
+local originalAnimationSpeeds = {}
+
+---@return nil
+---@param actionIndex integer
+---@param speed decimal
+function behaviorTreeToolKit.setAnimationSpeed(self, actionIndex, speed)
+    local actionObject = self:getActionObject(actionIndex)
+    if originalAnimationSpeeds[actionIndex] == nil then
+        originalAnimationSpeeds[actionIndex] = actionObject:get_Speed()
+    end
+    actionObject:set_Speed(speed)
+    return self:addFunction(
+        self.setAnimationSpeed,
+        {actionIndex, speed},
+        function()
+            actionObject:set_Speed(originalAnimationSpeeds[actionIndex])
+            originalAnimationSpeeds[actionIndex] = nil
+        end
+    )
+end
+
+---@return integer
+---@param player_manager snow.player.PlayerManager
+---@param skillId integer
+function behaviorTreeToolKit:getArmorSkillLevel(player_manager, skillId)
+    local allPlayerSkills = player_manager:call("get_PlayerSkill")
+    local armorSkills = allPlayerSkills:get_element(0)
+    local skillData = armorSkills:call("getSkillData", skillId)
+    if not skillData then
+        return 0
+    end
+    return skillData:get_field("SkillLv") or 0
+end
+
 return behaviorTreeToolKit
